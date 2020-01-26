@@ -1,0 +1,32 @@
+*,
+*:after,
+*:before {
+    box-sizing: inherit;
+}
+
+html {
+    box-sizing: border-box;
+}
+
+.image-container {
+    width: 80%;
+}
+
+.counter-container {
+    margin-top: 1rem;
+}
+
+.image-style {
+    height: 18rem;
+    width: 24rem;
+    object-fit: cover;
+    margin-top: 1rem;
+}
+
+#cat-list {
+    text-align: start;
+}
+
+.hideContainer {
+    display: none;
+}
