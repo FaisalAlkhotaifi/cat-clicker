@@ -1,127 +1,107 @@
-$(function() {
-    class Cat {
-        constructor(name, pic, containerElement, nameElement, imageElement, counterElement, counter = 0){
-            this.name = name;
-            this.pic = pic;
-            this.containerElement = containerElement;
-            this.nameElement = nameElement;
-            this.imageElement = imageElement;
-            this.counterElement = counterElement;
-            this.counter = counter;
-        }
+const modal = {
+    currentCat: null,
+    cats: [
+        {
+            name: 'Cute Cat',
+            image: 'images/cat.jpg',
+            counter: 0
+        },
+        {
+            name: 'Shy Cat',
+            image: 'images/cat2.jpg',
+            counter: 0
+        },
+        {
+            name: 'Family Cat',
+            image: 'images/cat3.jpg',
+            counter: 0
+        },
+        {
+            name: 'Superised Cat',
+            image: 'images/cat4.jpg',
+            counter: 0
+        },
+        {
+            name: 'Funny Cat',
+            image: 'images/cat5.jpeg',
+            counter: 0
+        },
+    ],
+};
+
+const controller = {
+    getCatList: function() {
+        return modal.cats;
+    },
+
+    getCurrentCat: function() {
+        return modal.currentCat;
+    },
+
+    setCurrentCat: function(cat) {
+        modal.currentCat = cat;
+    },
+
+    incrementCounter: function() {
+        modal.currentCat.counter++;
+        catView.render();
+    },
+
+    init: function() {
+        modal.currentCat = modal.cats[0];
+        cartListView.init();
+        catView.init();
     }
+};
 
-    const modal = {
-        cats: [
-            new Cat(
-                'Cute Cat',
-                './images/cat.jpg',
-                $('#cat_continer_1'),
-                $('#cat_name_1'),
-                $('#cat_image_1'),
-                $('#counter_1')),
-            new Cat(
-                'Shy Cat',
-                './images/cat2.jpg',
-                $('#cat_continer_2'),
-                $('#cat_name_2'),
-                $('#cat_image_2'),
-                $('#counter_2')),
-            new Cat(
-                'Family Cat',
-                './images/cat3.jpg',
-                $('#cat_continer_3'),
-                $('#cat_name_3'),
-                $('#cat_image_3'),
-                $('#counter_3')),
-            new Cat(
-                'Superised Cat',
-                './images/cat4.jpg',
-                $('#cat_continer_4'),
-                $('#cat_name_4'),
-                $('#cat_image_4'),
-                $('#counter_4')),
-            new Cat(
-                'Funny Cat',
-                './images/cat5.jpeg',
-                $('#cat_continer_5'),
-                $('#cat_name_5'),
-                $('#cat_image_5'),
-                $('#counter_5'))
-        ]
-    };
+const catView = {
+    init: function() {
+        this.catContainerElement = $('#display-cat-container');
+        this.catNameElement = $('#cat_name');
+        this.catImageElement = $('#cat_image');
+        this.catCounterElement = $('#counter');
 
-    const controller = {
-        getCatList: function() {
-            return modal.cats;
-        },
+        this.catImageElement.click(function() {
+            controller.incrementCounter();
+        });
 
-        init: function() {
-            view.init();
-        }
-    };
+        this.render();
+    },
 
-    const view = {
-        init: function () {
-            const catContainer = $('#display-cat-container');
-            if (controller.getCatList().length > 0) {
-                catContainer.removeClass('hideContainer');
-                view.setDisplayedCat(controller.getCatList()[0]);
-                view.render();
-            } else {
-                catContainer.addClass('hideContainer');
-            }
-        },
+    render: function() {
+        const currentCat = controller.getCurrentCat();
+        this.catNameElement.text(currentCat.name);
+        this.catImageElement.attr('src', currentCat.image);
+        this.catCounterElement.text(currentCat.counter);
+    }
+};
 
-        render: function() {
-            const catListElement = $('#cat-list');
-            view.addCatList(catListElement);
-        },
+const cartListView = {
+    init: function() {
+        this.catListElement = $('#cat-list');
+        this.render();
+    },
 
-        addCatList: function(catListElement) {
-            controller.getCatList().forEach(function (cat, index) {
-                const itemElement = view.createCatItemList(cat, index);
-                catListElement.append(itemElement);
+    render: function() {
+        this.catListElement.html('');
 
-                cat.imageElement.click((function (catCopy) {
-                    return function () {
-                        catCopy.counter++;
-                        catCopy.counterElement.text(cat.counter);
-                    }
-                })(cat));
-            });
-        },
+        const self = this;
+        const catsList = controller.getCatList();
 
-        createCatItemList: function (cat, index) {
+        catsList.forEach(function (cat) {
             const itemElement = document.createElement('li');
             itemElement.classList.add('btn', 'btn-link');
             itemElement.innerText = cat.name;
-            itemElement.addEventListener('click', (function (catCopy, indexCopy) {
+            itemElement.addEventListener('click', (function (catCopy) {
                 return function () {
-                    view.handleDisplayOfCat(indexCopy);
-                    view.setDisplayedCat(catCopy);
+                    controller.setCurrentCat(catCopy);
+                    catView.render();
                 };
-            })(cat, index));
+            })(cat));
 
-            return itemElement;
-        },
+            self.catListElement.append(itemElement);
+        });
+    }
+};
 
-        setDisplayedCat: function(cat) {
-            cat.nameElement.text(cat.name);
-            cat.imageElement.attr('src', cat.pic);
-            cat.counterElement.text(cat.counter);
-        },
-
-        handleDisplayOfCat: function(currentIndex) {
-            controller.getCatList().forEach(function(cat, index) {
-                if (index === currentIndex) {
-                    cat.containerElement.removeClass('hideContainer');
-                } else {
-                    cat.containerElement.addClass('hideContainer');
-                }
-            })
-        }
-    };
-
-    controller.init();
-}());
+controller.init();
