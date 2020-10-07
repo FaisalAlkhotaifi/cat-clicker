@@ -47,10 +47,15 @@ const controller = {
         catView.render();
     },
 
+    updateCat: function(cat){
+        modal.currentCat = cat;
+    },
+
     init: function() {
         modal.currentCat = modal.cats[0];
         cartListView.init();
         catView.init();
+        adminControlView.init();
     }
 };
 
@@ -103,5 +108,45 @@ const cartListView = {
         });
     }
 };
+
+const adminControlView = {
+    init: function() {
+        this.adminButtonElement = $('#admin-button');
+        this.adminContainerElement = $('#display-admin-container');
+        this.imageNameInputElement = $('#image-name-input');
+        this.imageUrlInputElement = $('#image-url-input');
+        this.imageCounterInputElement = $('#image-counter-input');
+        this.saveButtonElement = $('#save-button');
+        this.cancelButtonElement = $('#cancel-button');
+
+        const self = this;
+
+        this.adminButtonElement.click(function() {
+            self.adminContainerElement.removeClass('hideContainer');
+            self.render();
+        });
+        this.saveButtonElement.click(function() {
+            const cat = {
+                name: self.imageNameInputElement.val(),
+                image: self.imageUrlInputElement.val(),
+                counter: parseInt(self.imageCounterInputElement.val())
+            };
+
+            controller.updateCat(cat);
+            catView.render();
+            self.adminContainerElement.addClass('hideContainer');
+        });
+        this.cancelButtonElement.click(function() {
+            self.adminContainerElement.addClass('hideContainer');
+        });
+    },
+
+    render: function() {
+        const cat = controller.getCurrentCat();
+        this.imageNameInputElement.val(cat.name);
+        this.imageUrlInputElement.val(cat.image);
+        this.imageCounterInputElement.val(cat.counter);
+    },
+}
 
 controller.init();
